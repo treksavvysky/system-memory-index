@@ -8,6 +8,8 @@ The product being built is not a single hand-crafted SMI instance. The product i
 
 The internal design of the generated SMI remains unchanged. The generator's responsibility is to materialize that design faithfully.
 
+The reference implementation of this generator is Python.
+
 ---
 
 ## System Context
@@ -32,6 +34,12 @@ Within that generated subsystem:
 
 The generator is responsible for creating this structure, placing the canonical documents, and optionally producing example fixture records for validation.
 
+In the default case, the target workspace is the current working directory. That means the generator should normally materialize the subsystem at:
+
+```text
+./Command_Environment/System_Memory_Index
+```
+
 ---
 
 ## Architectural Principles
@@ -42,6 +50,7 @@ The generator is responsible for creating this structure, placing the canonical 
 - Simplicity: the implementation should remain understandable without heavy infrastructure.
 - Idempotence: rerunning generation against the same target should not corrupt an existing valid subsystem.
 - Portability: the generator should be usable in any suitable filesystem workspace.
+- Pragmatism: the first implementation should use plain Python and the standard library where practical.
 
 ---
 
@@ -95,9 +104,11 @@ These optional artifacts must remain clearly identifiable as generated examples 
 
 ### 1. Entry Interface
 
-The system should expose a single generation entry point, typically a CLI command or script invocation.
+The system should expose a single generation entry point, typically a Python CLI command or script invocation.
 
 Its job is to accept the target path and any allowed configuration, then invoke generation in a predictable order.
+
+If no target path is supplied, the entry interface should default to the current working directory.
 
 ### 2. Configuration Resolver
 
@@ -105,10 +116,12 @@ This component resolves the generation target and any supported options.
 
 Initial configuration should be minimal. At minimum, the generator must know:
 
-- the root target workspace
+- the root target workspace, defaulting to the current working directory
 - whether example records should be included
 
 The architecture should prefer convention over configuration.
+
+In the reference implementation, this resolver should be implemented in Python with a minimal argument surface.
 
 ### 3. Structure Generator
 
@@ -155,6 +168,7 @@ Validation should confirm:
 The expected flow is:
 
 1. Resolve target workspace path.
+   If no path is provided, use the current working directory.
 2. Resolve generator options.
 3. Create `Command_Environment` if needed.
 4. Create `System_Memory_Index` and its required zones.
@@ -224,6 +238,7 @@ The initial generator architecture does not require:
 - remote orchestration
 - dynamic schema negotiation
 - automated graph analysis
+- a non-Python reference implementation
 
 The first objective is a reliable filesystem generator.
 

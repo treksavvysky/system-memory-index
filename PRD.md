@@ -8,6 +8,8 @@ The goal is to make SMI creation reproducible. Instead of manually assembling th
 
 The generator must preserve the current SMI internal design. It changes how the SMI is instantiated, not what the SMI is.
 
+The reference implementation for the initial release is Python.
+
 ---
 
 ## Problem
@@ -36,6 +38,12 @@ including its canonical zones, core documents, manifests, and optional example r
 
 The product succeeds when a user can generate a valid SMI subsystem in a fresh target workspace without manually reconstructing the specification.
 
+By default, the target workspace is the current working directory. When no explicit target path is provided, the generator should create:
+
+```text
+./Command_Environment/System_Memory_Index
+```
+
 ---
 
 ## Users
@@ -61,7 +69,7 @@ Primary users:
 
 ### FR1. Generate Canonical Structure
 
-The product must generate the canonical SMI subtree inside `Command_Environment`:
+The product must generate the canonical SMI subtree inside `Command_Environment`, relative to the target workspace root:
 
 ```text
 /Command_Environment/
@@ -104,6 +112,14 @@ The product must provide a way to confirm that generated output matches the expe
 
 The product must support repeated execution against fresh workspaces and should behave predictably when executed against partially initialized targets.
 
+### FR7. Provide a Python Reference Implementation
+
+The product must be implemented initially as a Python-based generator, exposed through a documented Python entry point such as a CLI or script invocation.
+
+### FR8. Default to the Current Working Directory
+
+When no explicit target path is supplied, the product must treat the current working directory as the workspace root and generate the SMI subtree relative to it.
+
 ---
 
 ## Non-Functional Requirements
@@ -114,6 +130,7 @@ The product must support repeated execution against fresh workspaces and should 
 - Human-readable generated artifacts
 - Clear failure behavior when generation cannot proceed safely
 - No requirement for databases or hosted services
+- Python as the explicit reference implementation stack for the first release
 
 ---
 
@@ -145,6 +162,7 @@ The product is successful when:
 ## Acceptance Criteria
 
 - A documented invocation exists for generating the SMI subsystem.
+- When invoked without a target path, generation occurs relative to the current working directory.
 - Running the generator creates `Command_Environment/System_Memory_Index`.
 - The generated subsystem contains `00_Doctrine`, `01_SMI_Core`, `02_Ideation`, and `05_Archive`.
 - The generated `01_SMI_Core` contains the canonical architecture and schema/template documents.
