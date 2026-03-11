@@ -209,3 +209,6 @@ __marimo__/
 # Local workspace files
 .DS_Store
 .codex/
+
+# Default generated SMI output when running from repo root
+Command_Environment/
